@@ -593,6 +593,10 @@ body {
   margin-top: 20px !important;
 }
 
+button:disabled .material-icons{
+  color: #cdcdcd;
+}
+
 .card {
 	transition: height 0.5s ease-in-out;
 	will-change: height;

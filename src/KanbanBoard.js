@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./index.css";
 
 export default function KanbanBoard(props) {
   const [searchInput, setSearchInput] = React.useState("");
-  const [isActiveBtnForward, setIsActiveBtnForward] = React.useState(true);
-  const [isActiveBtnBack, setIsActiveBtnBack] = React.useState(true);
-  const [isFull, setIsFull] = React.useState(true);
 
   let [tasks, setTasks] = React.useState([
     { name: "Despertar", stage: 0 },
     { name: "Desayunar", stage: 0 },
+    { name: "Almorzar", stage: 0 },
+    { name: "Correr", stage: 0 },
+    { name: "Ejercicio", stage: 0 },
   ]);
 
   let [stagesNames, setStagesNames] = React.useState([
@@ -29,21 +29,16 @@ export default function KanbanBoard(props) {
     stagesTasks[stageId].push(task);
   }
 
-  // tasks.forEach(element => {
-  //   if(element.stage === 0){
-  //     setIsActiveBtnBack(false);
-  //   } else if(element.stage > stagesNames.length){
-  //     setIsActiveBtnForward(false);
-  //   } else {
-  //     setIsActiveBtnBack(true);
-  //     setIsActiveBtnForward(true);
-  //   }
-  // });
-
-  const changeStageTaskPlus = (taskToDo) => {
-    console.log("INDEX",taskToDo);
-    tasks[taskToDo].stage = tasks[taskToDo].stage + 1;
-    setTasks(() => [...tasks]);
+  const changeStageTaskPlus = (task, index) => {
+    const stateCopy = [...tasks];
+    const [_] = task.name.split(" ");
+    for (const s in stateCopy) {
+      if (Number(s) === Number(index)) {
+        task.stage += 1;
+      }
+    }
+    stateCopy[index] = task;
+    setTasks([...tasks]);
   };
 
   const addTask = (taskToDo) => {
@@ -57,14 +52,24 @@ export default function KanbanBoard(props) {
     }
   };
 
-  const changeStageTaskMinus = (taskToDo) => {
-    tasks[taskToDo].stage = tasks[taskToDo].stage - 1;
-    setTasks(() => [...tasks]);
+  const changeStageTaskMinus = (task, index) => {
+    const stateCopy = [...tasks];
+    const [_] = task.name.split(" ");
+    for (const s in stateCopy) {
+      if (Number(s) === Number(index)) {
+        task.stage -= 1;
+      }
+    }
+    stateCopy[index] = task;
+    setTasks([...tasks]);
   };
 
-  const deleteTask = (taskToDoId) => {
-    tasks.splice(taskToDoId, 1);
-    setTasks(() => [...tasks]);
+  const deleteTask = (task) => {
+    const removeItem = tasks.indexOf(task);
+    if (removeItem > -1) { 
+      tasks.splice(removeItem, 1); 
+    }
+    setTasks([...tasks]);
   };
 
   return (
@@ -113,8 +118,8 @@ export default function KanbanBoard(props) {
                               data-testid={`${task.name
                                 .split(" ")
                                 .join("-")}-back`}
-                              onClick={() => changeStageTaskMinus(index)}
-                              disabled={!isActiveBtnBack}
+                              onClick={() => changeStageTaskMinus(task, index)}
+                              disabled={task.stage === 0}
                             >
                               <i className="material-icons">arrow_back</i>
                             </button>
@@ -123,8 +128,8 @@ export default function KanbanBoard(props) {
                               data-testid={`${task.name
                                 .split(" ")
                                 .join("-")}-forward`}
-                              onClick={() => changeStageTaskPlus(index)}
-                              disabled={!isActiveBtnForward}
+                              onClick={() => changeStageTaskPlus(task, index)}
+                              disabled={task.stage === stagesNames.length-1}
                             >
                               <i className="material-icons">arrow_forward</i>
                             </button>
@@ -133,7 +138,7 @@ export default function KanbanBoard(props) {
                               data-testid={`${task.name
                                 .split(" ")
                                 .join("-")}-delete`}
-                              onClick={() => deleteTask(index)}
+                              onClick={() => deleteTask(task)}
                             >
                               <i className="material-icons">delete</i>
                             </button>
